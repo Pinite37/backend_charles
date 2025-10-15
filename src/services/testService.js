@@ -9,4 +9,4 @@ function testSentEmail() {
     });
 }
 
-export { testSentEmail };
+export default testSentEmail;
