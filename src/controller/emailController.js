@@ -23,32 +23,18 @@ const sendInvitations = async (req, res) => {
     // Filter data to only those with email
     data = data.filter(row => row.Email && row.Email.trim());
 
-    // ✅ Répondre immédiatement au client AVANT d'envoyer les emails
-    res.json({ 
-      message: 'Email sending started', 
-      total: data.length,
-      status: 'processing'
+    // Envoyer tous les emails AVANT de répondre (avec WebSocket pour la progression)
+    await sendEmails(data, req.io);
+
+    // Delete the uploaded file after processing
+    fs.unlink(file.path, (err) => {
+      if (err) console.error('Error deleting file:', err);
     });
 
-    // ✅ Envoyer les emails en arrière-plan (sans await)
-    sendEmails(data, req.io)
-      .then(() => {
-        console.log('All emails sent successfully');
-        // Delete the uploaded file after processing
-        fs.unlink(file.path, (err) => {
-          if (err) console.error('Error deleting file:', err);
-        });
-      })
-      .catch((error) => {
-        console.error('Error sending emails:', error);
-        // Also delete file on error
-        fs.unlink(file.path, (err) => {
-          if (err) console.error('Error deleting file:', err);
-        });
-      });
-
+    // Répondre APRÈS que tous les emails soient envoyés
+    res.json({ message: 'Emails sent successfully', total: data.length });
   } catch (error) {
-    // Delete file on parsing error
+    // Also delete file on error
     fs.unlink(file.path, (err) => {
       if (err) console.error('Error deleting file:', err);
     });
