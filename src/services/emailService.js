@@ -101,6 +101,8 @@ const sendEmails = async (data, io) => {
   console.log(`Starting to send emails to ${data.length} recipients`);
   const total = data.length;
   let sent = 0;
+  let failed = 0;
+  
   for (const row of data) {
     const email = row.Email;
     const name = row['Nom et Prenoms'];
@@ -125,15 +127,25 @@ const sendEmails = async (data, io) => {
       await EmailSent.create({ name, email });
       sent++;
       console.log(`Email sent successfully to ${name} (${sent}/${total})`);
-      io.emit('progress', { sent, total });
+      io.emit('progress', { sent, total, failed });
+      
+      // Petit délai pour s'assurer que le frontend reçoit le message
+      await new Promise(resolve => setTimeout(resolve, 100));
     } catch (error) {
       console.error(`Failed to send email to ${name} at ${email}: ${error.message}`);
       await EmailSent.create({ name, email, status: 'failed', error: error.message });
+      failed++;
+      io.emit('progress', { sent, total, failed });
     }
   }
-  console.log(`Email sending completed: ${sent}/${total} emails sent successfully`);
-  io.emit('done', { sent, total });
-  return { sent, total };
+  
+  console.log(`Email sending completed: ${sent}/${total} emails sent successfully, ${failed} failed`);
+  
+  // Attendre un peu avant d'envoyer le signal 'done' pour s'assurer que tous les 'progress' sont bien reçus
+  await new Promise(resolve => setTimeout(resolve, 200));
+  io.emit('done', { sent, total, failed });
+  
+  return { sent, total, failed };
 };
 
 export { parseCSV, parseXLSX, sendEmails };
