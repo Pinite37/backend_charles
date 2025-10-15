@@ -20,9 +20,12 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
   },
-  connectionTimeout: 10000, // 10 seconds
-  greetingTimeout: 10000,
-  socketTimeout: 10000
+  connectionTimeout: 60000, // 60 seconds
+  greetingTimeout: 30000,   // 30 seconds
+  socketTimeout: 60000,     // 60 seconds
+  pool: true,               // Utiliser un pool de connexions pour réutiliser la connexion SMTP
+  maxConnections: 5,        // Maximum 5 connexions simultanées
+  maxMessages: 100          // Envoyer jusqu'à 100 messages par connexion avant de la réinitialiser
 });
 
 const formatDate = (dateStr) => {
@@ -128,9 +131,6 @@ const sendEmails = async (data, io) => {
       sent++;
       console.log(`Email sent successfully to ${name} (${sent}/${total})`);
       io.emit('progress', { sent, total, failed });
-      
-      // Petit délai pour s'assurer que le frontend reçoit le message
-      await new Promise(resolve => setTimeout(resolve, 100));
     } catch (error) {
       console.error(`Failed to send email to ${name} at ${email}: ${error.message}`);
       await EmailSent.create({ name, email, status: 'failed', error: error.message });
@@ -140,9 +140,6 @@ const sendEmails = async (data, io) => {
   }
   
   console.log(`Email sending completed: ${sent}/${total} emails sent successfully, ${failed} failed`);
-  
-  // Attendre un peu avant d'envoyer le signal 'done' pour s'assurer que tous les 'progress' sont bien reçus
-  await new Promise(resolve => setTimeout(resolve, 200));
   io.emit('done', { sent, total, failed });
   
   return { sent, total, failed };
