@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import emailRoutes from './src/routes/emailRoutes.js';
+import testRouter from './src/routes/testroutes.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -27,6 +28,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/api', emailRoutes);
+app.use('/api', testRouter);
 
 const PORT = process.env.PORT || 3000;
 
