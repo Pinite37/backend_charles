@@ -29,13 +29,46 @@ const transporter = nodemailer.createTransport({
 });
 
 const formatDate = (dateStr) => {
-  // Assuming dateStr is MM/DD/YYYY
-  const [month, day, year] = dateStr.split('/');
-  const date = new Date(year, month - 1, day);
+  if (!dateStr) return 'Date non spécifiée';
+  
+  let date;
+  
+  // Si c'est un nombre (format Excel serial date)
+  if (typeof dateStr === 'number') {
+    // Excel dates start from 1900-01-01
+    const excelEpoch = new Date(1899, 11, 30);
+    date = new Date(excelEpoch.getTime() + dateStr * 86400000);
+  } 
+  // Si c'est déjà un objet Date
+  else if (dateStr instanceof Date) {
+    date = dateStr;
+  }
+  // Si c'est une chaîne de caractères
+  else if (typeof dateStr === 'string') {
+    // Format MM/DD/YYYY ou M/D/YYYY
+    if (dateStr.includes('/')) {
+      const [month, day, year] = dateStr.split('/');
+      date = new Date(year, month - 1, day);
+    } else {
+      // Essayer de parser directement
+      date = new Date(dateStr);
+    }
+  } else {
+    return 'Date invalide';
+  }
+  
+  // Vérifier que la date est valide
+  if (isNaN(date.getTime())) {
+    return 'Date invalide';
+  }
+  
   const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
   const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
   const dayName = days[date.getDay()];
   const monthName = months[date.getMonth()];
+  const day = date.getDate();
+  const year = date.getFullYear();
+  
   return `${dayName} ${day} ${monthName} ${year}`;
 };
 
