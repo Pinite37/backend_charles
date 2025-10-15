@@ -1,4 +1,4 @@
-import EmailSent from "../models/EmailSent";
+import EmailSent from "../models/EmailSent.js";
 
 
 function testSentEmail() {
