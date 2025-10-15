@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import csv from 'csv-parser';
-import * as XLSX from 'xlsx';
+import XLSX from 'xlsx';
 import fs from 'fs';
 import EmailSent from '../models/EmailSent.js';
 import dotenv from 'dotenv';
