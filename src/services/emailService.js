@@ -81,9 +81,9 @@ Détails de l'entretien :
 
 • Options de date et d'heure : Veuillez choisir l'une des options suivantes :
 
-• ${formatDate(date1)}, à 10 h 00
+• ${formatDate(date1)}, à 09 h 15
 
-• ${formatDate(date2)}, à 10 h 00
+• ${formatDate(date2)}, à 09 h 15
 
 • Emplacement : 4 Rue Georges-Bilodeau, Gatineau, QC, Bureau 105, J8Z 1V2 (2e étage)
 
@@ -102,9 +102,9 @@ Interview Details:
 
 • Date and Time Options: Please choose one of the following:
 
-• ${formatDate(date1)}, at 10:00 AM
+• ${formatDate(date1)}, at 09:15 AM
 
-• ${formatDate(date2)}, at 10:00 AM
+• ${formatDate(date2)}, at 09:15 AM
 
 • Location: 4 Rue Georges-Bilodeau, Gatineau, QC, Office 105, J8Z 1V2 (2nd floor)
 
